@@ -7,13 +7,19 @@ const options = {
 
 const casper = require('casper').create(options);
 
-var prices = []
+var fs = require('fs');
 
-function getPrices(){
-    var price = document.querySelectorAll('span.a-price > span.a-offscreen')
-   return Array.prototype.map.call(price, function(e) {
-    return e.innerHTML.replace("$","");
-});
+var products = []
+
+function getProducts(){
+
+    var url = document.querySelectorAll('a.a-link-normal')
+    var price = document.querySelectorAll('a.a-size-base > span.a-price > span.a-offscreen')
+    var productos = []
+    for(var i =0; i<price.length;i++){
+        productos.push({url: url[i].href, price: price[i].innerHTML})
+    }
+return productos;
 }
 
 casper.start('https://www.amazon.com/', function() {
@@ -28,12 +34,11 @@ casper.thenClick("input[type='submit']", function(){
 });
 
 casper.then(function() {
-    prices= this.evaluate(getPrices)
-    prices.forEach(function(price) {
-        if(price<=10){
-            console.log('Es hora de comprar - '+ price)
-        }
+    products= this.evaluate(getProducts)
+    products.forEach(function(product) {
+        console.log(product.url + "-" + product.price)
     });
+    fs.write("productos.json", JSON.stringify(products), 'w');
 });
 
 casper.run();

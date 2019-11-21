@@ -1,73 +1,90 @@
+/*
+
+---------------------------------------
+
+    Comprando un producto en Amazon
+
+---------------------------------------
+
+
+*/
+
+
 const options = {
     pageSettings: {
         loadImages:  false,       
         loadPlugins: false
-    },
-    viewportSize: {
-        width: 500,
-        height: 500
     }
 }
-function getName(){
-    var price = document.querySelectorAll('span.nav-line-1')
-   return Array.prototype.map.call(price, function(e) {
-    return e.innerHTML.replace("$","");
-});
-}
 
-var fs = require('fs');
 const casper = require('casper').create(options);
+const env = require('system').env;
+const amazon_email = env.AMAZON_EMAIL;
+const amazon_passwd = env.AMAZON_PASS;
+
 casper.userAgent('Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)');
-casper.options.waitTimeout = 10000;
+
+casper.options.waitTimeout = 6000;
+
 casper.start('https://www.amazon.com/', function() {
     this.echo("Entrando a Amazon.com");
 });
 
-casper.capture("screenshots/amazon1.png")
+
 casper.thenClick("a[data-nav-role='signin']", function(){
     this.echo("Estoy en " + this.getTitle())
-    this.sendKeys("input#ap_email","")
+    this.sendKeys("input#ap_email",amazon_email)
 });
 
 casper.thenClick("input#continue", function(){
-    this.echo('Voy a verificar');
+    this.echo('Click en Continue');
 });
 
 casper.thenClick("#signInSubmit", function(){
-    this.sendKeys("#ap_password","")
-    this.echo('Voy a verificar');
+    this.sendKeys("#ap_password",amazon_passwd)
+    this.echo('Verificar');
 });
 
 casper.thenClick("#signInSubmit", function(){
-    // fs.write('text.txt', this.getPageContent(), 'w');
-    // this.echo(this.getPageContent())
+    this.echo("Click en Verificar")
 });
 
 casper.thenClick("#continue", function(){
-    this.echo('esperando confirmación')
-    this.wait(8000, function(){this.echo('2')});
+    this.echo('Esperando confirmación')
+    this.wait(8000, function(){this.echo('Verificando confirmación')});
 });
 
-casper.thenOpen('https://www.amazon.com/Bluetooth-MIFA-Earphones-Microphone-Headphones/dp/B07PKR7T1V/',function(){
-    this.echo(getTitle())
-    console.log(this.evaluate(getName()))
+casper.waitForSelector('#twotabsearchtextbox',function success(){
+this.echo('Logeado correctamente')
+},function fail(){
+    this.echo('Error')
 })
-// casper.waitForSelector('#twotabsearchtextbox',function success(){
-// this.echo('logeado')
-// },function fail(){
-//     this.echo('error')
-// })
-// casper.thenClick("input#signInSubmit", function(){
 
-// });
+//Otro Link https://www.amazon.com/Compatible-iPhone-Clear-Anti-Scratch-Absorption/dp/B07HRJL27Z/
 
-// casper.then(function() {
-//     prices= this.evaluate(getPrices)
-//     prices.forEach(function(price) {
-//         if(price<=10){
-//             console.log('Es hora de comprar - '+ price)
-//         }
-//     });
-// });
+casper.thenOpen('https://www.amazon.com/Bluetooth-MIFA-Earphones-Microphone-Headphones/dp/B07PKR7T1V/',function(){
+    this.echo("Estoy en " + this.getTitle())
+})
+
+casper.thenClick("#buy-now-button", function(){
+console.log("Click en Buy Now")
+})
+
+casper.waitForSelector('#siNoCoverage-announce',function success(){
+    this.thenClick('#siNoCoverage-announce',function(){
+        this.echo("Click en No Thanks")
+    })
+    
+    },function fail(){
+        this.echo('No hubo otra ventana emergente')
+    })
+
+casper.then(function(){
+        this.echo(this.getTitle())
+})
+
+casper.thenClick("input.place-your-order-button", function(){
+    this.echo('Producto Comprado')
+})
 
 casper.run();
