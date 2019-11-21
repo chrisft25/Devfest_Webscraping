@@ -1,0 +1,25 @@
+{
+  "name": "webscraping-casperjs-devfest",
+  "version": "1.0.0",
+  "description": "Code samples used in DevFest",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chrisft25/Devfest_Webscraping.git"
+  },
+  "keywords": [
+    "webscraping",
+    "nodejs",
+    "devfest",
+    "elsalvador"
+  ],
+  "author": "Christopher Fuentes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chrisft25/Devfest_Webscraping/issues"
+  },
+  "homepage": "https://github.com/chrisft25/Devfest_Webscraping#readme"
+}
